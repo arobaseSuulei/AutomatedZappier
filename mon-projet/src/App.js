@@ -26,7 +26,7 @@ function App() {
 
                 try {
                     // Envoie les données au webhook Zapier
-                    const webhookUrl = 'https://hooks.zapier.com/hooks/catch/22649487/2pmy9jw/'; // Remplace cette URL par ton URL Zapier
+                    const webhookUrl = 'https://hkdk.events/x9vpsp029sg4w7'; // Remplace cette URL par ton URL Zapier
 
                     const response = await fetch(webhookUrl, {
                         method: 'POST',
