@@ -1,15 +1,8 @@
 import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import Papa from "papaparse";
 
-// Initialisation de Supabase
-const supabase = createClient(
-    "https://pxyqknxfvimxdcmplbff.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4eXFrbnhmdmlteGRjbXBsYmZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjkzMDM4NjIsImV4cCI6MjA0NDg3OTg2Mn0.cuq3c8ejHCSky7BcV1qlj76_QYWcYXYiAbvDolxN6Uk"
-);
-
-export default function CSVStorageUploader() {
+export default function CSVUploader() {
     const [file, setFile] = useState(null);
-    const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState("");
 
     const handleFileChange = (e) => {
@@ -23,27 +16,33 @@ export default function CSVStorageUploader() {
             return;
         }
 
-        setUploading(true);
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: async (results) => {
+                const parsedData = results.data;
+                console.log(parsedData); // JSON des données
 
-        const filePath = `csv/${Date.now()}-${file.name}`;
+                try {
+                    const response = await fetch("https://hooks.zapier.com/hooks/catch/22649487/2pmy9jw/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(parsedData),
+                    });
 
-        const { data, error } = await supabase.storage
-            .from("zappier") // Bucket existant
-            .upload(filePath, file, {
-                cacheControl: "3600",
-                contentType: "text/csv", // ⚡ Ajout pour éviter 400 Bad Request
-                upsert: false, // Facultatif : empêcher l'écrasement
-            });
+                    if (!response.ok) {
+                        throw new Error(`Erreur serveur: ${response.status}`);
+                    }
 
-        if (error) {
-            console.error(error);
-            setMessage("Erreur : " + error.message);
-        } else {
-            console.log(data);
-            setMessage("✅ Fichier uploadé avec succès !");
-        }
-
-        setUploading(false);
+                    setMessage("✅ Données envoyées avec succès !");
+                } catch (error) {
+                    console.error(error);
+                    setMessage("Erreur lors de l'envoi des données.");
+                }
+            },
+        });
     };
 
     return (
@@ -59,10 +58,9 @@ export default function CSVStorageUploader() {
 
             <button
                 onClick={handleUpload}
-                disabled={uploading}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded disabled:opacity-50"
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
             >
-                {uploading ? "Upload en cours..." : "Uploader"}
+                Envoyer
             </button>
 
             {message && (
