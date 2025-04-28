@@ -22,26 +22,26 @@ function App() {
             complete: async (results) => {
                 const parsedData = results.data;
 
-                // Log des données dans la console avant d'envoyer au backend
                 console.log('Données JSON extraites :', parsedData);
 
-                // Envoi des données au backend (tu peux commenter cette partie pour tester)
-                /* const response = await fetch('/api/send-to-zapier', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ data: parsedData }),
-                });
+                try {
+                    const response = await fetch('/api/zapier', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(parsedData[0]), // ENVOIE UNE LIGNE (le premier objet du CSV)
+                    });
 
-                if (response.ok) {
-                    setMessage('✅ Données envoyées avec succès !');
-                } else {
-                    setMessage('Erreur lors de l\'envoi des données.');
-                } */
-
-                // Si les données sont correctement affichées, on peut passer à l'étape suivante
-                setMessage('✅ Données extraites avec succès et affichées dans la console.');
+                    if (response.ok) {
+                        setMessage('✅ Données envoyées avec succès vers Zapier !');
+                    } else {
+                        setMessage('❌ Erreur lors de l\'envoi vers Zapier.');
+                    }
+                } catch (error) {
+                    console.error('Erreur en envoyant vers Zapier:', error);
+                    setMessage('❌ Erreur de connexion.');
+                }
             },
         });
     };
