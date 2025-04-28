@@ -3,13 +3,12 @@ import fetch from 'node-fetch';
 export default async function handler(req, res) {
     if (req.method === 'POST') {
         try {
-            // Envoie des données vers Zapier
             const response = await fetch('https://hooks.zapier.com/hooks/catch/22649487/2pmy9jw/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(req.body), // Les données envoyées depuis le frontend
+                body: JSON.stringify(req.body),
             });
 
             if (!response.ok) {
@@ -21,6 +20,8 @@ export default async function handler(req, res) {
             res.status(500).json({ error: 'Erreur serveur' });
         }
     } else {
-        res.status(405).json({ error: 'Méthode non autorisée ! ' });
+        // ✅ AJOUTE CETTE LIGNE
+        res.setHeader('Allow', ['POST']);
+        res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
