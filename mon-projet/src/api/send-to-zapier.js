@@ -21,6 +21,6 @@ export default async function handler(req, res) {
             res.status(500).json({ error: 'Erreur serveur' });
         }
     } else {
-        res.status(405).json({ error: 'Méthode non autorisée' });
+        res.status(405).json({ error: 'Méthode non autorisée ! ' });
     }
 }
