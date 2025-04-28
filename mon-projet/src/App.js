@@ -54,7 +54,7 @@ function App() {
                 accept=".csv"
                 onChange={handleFileChange}
             />
-            <button onClick={handleUpload}>Envoyer</button>
+            <button onClick={handleUpload}>Envoyé</button>
             {message && <p>{message}</p>}
         </div>
     );
