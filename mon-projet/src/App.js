@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
+import { UploadCloud } from 'lucide-react';
 
 function App() {
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        document.title = "Automated";
+    }, []);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
         setMessage('');
     };
 
-    useEffect(() => {
-        document.title = "Automated";
-    }, []);
-
     const handleUpload = async () => {
         if (!file) {
-            setMessage('Veuillez choisir un fichier CSV.');
+            setMessage('📂 Veuillez choisir un fichier CSV.');
             return;
         }
 
@@ -39,49 +40,56 @@ function App() {
                     });
 
                     if (response.ok) {
-                        setMessage('✅ Données envoyées avec succès pour traitement !');
+                        setMessage('✅ Données envoyées avec succès !');
                     } else {
                         const errorData = await response.json();
-                        console.error('Erreur lors de l\'envoi à Zapier:', errorData);
-                        setMessage(`❌ Erreur lors de l'envoi des données. Détails: ${errorData.message || 'Erreur inconnue'}`);
+                        setMessage(`❌ Erreur : ${errorData.message || 'Erreur inconnue'}`);
                     }
                 } catch (error) {
-                    console.error('Erreur de connexion à Zapier:', error);
-                    setMessage('❌ Erreur de connexion à Zapier.');
+                    setMessage('❌ Erreur de connexion.');
                 }
             },
         });
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
-            <div className="bg-white shadow-md rounded-xl p-8 w-full max-w-md text-center">
-                <h1 className="text-2xl font-semibold mb-6 text-gray-800">
-                    Uploader un fichier CSV
-                </h1>
-                <input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleFileChange}
-                    className="mb-4 w-full text-sm text-gray-600
-               file:mr-4 file:py-2 file:px-4
-               file:rounded-full file:border-0
-               file:text-sm file:font-semibold
-               file:bg-[#f9e0fa] file:text-[#c10dc1]
-               hover:file:bg-[#f3c9f7]"
-                />
+        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-purple-50 flex items-center justify-center px-4">
+            <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center space-y-6">
+                <div className="flex flex-col items-center gap-2">
+                    <UploadCloud size={42} className="text-[#c10dc1]" />
+                    <h1 className="text-2xl font-bold text-gray-800">Importer votre fichier CSV</h1>
+                    <p className="text-gray-500 text-sm">Envoyez votre fichier pour le traitement automatique de mails</p>
+                </div>
+
+                <div className="relative">
+                    <input
+                        type="file"
+                        accept=".csv"
+                        onChange={handleFileChange}
+                        className="block w-full text-sm text-gray-600
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-md file:border-0
+                            file:font-semibold file:bg-[#f9e0fa] file:text-[#c10dc1]
+                            hover:file:bg-[#f3c9f7]"
+                    />
+                    {file && (
+                        <p className="text-xs text-gray-500 mt-2">
+                            Fichier sélectionné : <span className="font-medium">{file.name}</span>
+                        </p>
+                    )}
+                </div>
 
                 <button
-                    style={{backgroundColor: '#c10dc1'}}
                     onClick={handleUpload}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                    className="w-full bg-[#c10dc1] hover:bg-[#a70ea7] text-white font-semibold py-2 px-4 rounded-lg transition"
                 >
-                    Envoyer
+                    📤 Envoyer
                 </button>
+
                 {message && (
-                    <p className="mt-4 text-sm text-gray-700 whitespace-pre-wrap">
+                    <div className="text-sm mt-2 text-gray-700 bg-gray-100 rounded-lg py-2 px-4">
                         {message}
-                    </p>
+                    </div>
                 )}
             </div>
         </div>
